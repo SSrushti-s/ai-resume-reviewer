@@ -1,6 +1,6 @@
-# AI Resume Reviewer 📄🤖
+# AI Resume Reviewer 📄
 ```
-An interactive, AI-powered web application built with **Streamlit**, **LangChain**, and **Groq Cloud**. This tool extracts content from a user's PDF resume, analyzes it against a target job description, and provides a structured JSON evaluation including a match percentage score, identified skill gaps, and critical recommendations.
+An interactive, AI-powered web application built with Streamlit, LangChain, and Groq Cloud. This tool extracts content from a user's PDF resume, analyzes it against a target job description, and provides a structured JSON evaluation including a match percentage score, identified skill gaps, and critical recommendations.
 
 Live Demo: https://ai-resume-reviewer-7mdbo4mgsvcg6mqklvgpph.streamlit.app/
 
