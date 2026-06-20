@@ -1,29 +1,47 @@
-from app.pdf_loader import extract_text_from_pdf
-from app.agent import get_resume_review
+import streamlit as st
 import json
+from app.pdf_loader import extract_text_from_pdf 
+from app.agent import get_resume_review
 
-if __name__ == "__main__":
-    # 1. Load the Resume
-    resume_content = extract_text_from_pdf("data\Srushti S - Computer Science and Engineering Student Resume (2).pdf")
+# Set up the web page title and icon
+st.set_page_config(page_title="AI Resume Reviewer", page_icon="📄", layout="centered")
 
-    # 2. Define the Job Description (In a real app, this comes from a MERN input)
-    job_desc = """
-    Looking for a Front-End Developer proficient in React, Node.js, and MongoDB. 
-    Experience with AI integration and Python is a plus.
-    """
+st.title("📄 AI Resume Reviewer")
+st.write("Upload your resume and paste the job description to get instant AI feedback.")
 
-    # 3. Get the Review
-    print("Analyzing Resume... please wait.")
-    try:
-        result = get_resume_review(resume_content, job_desc)
+# Create the input UI components
+uploaded_file = st.file_uploader("Upload your Resume (PDF format)", type=["pdf"])
 
-        print("\n===== AI RESUME REVIEW (JSON) =====")
-        pretty_result = json.dumps(result, indent=4)
-        
-        print(pretty_result)
-        
-        # Example of accessing specific data
-        print(f"\nMatch Score: {result['match_percentage']}%")
-        
-    except Exception as e:
-        print(f"An error occurred: {e}")
+job_desc = st.text_area(
+    "Paste the Job Description here", 
+    placeholder="Looking for a Front-End Developer proficient in React, Node.js..."
+)
+
+# Add an action button
+if st.button("Analyze Resume", type="primary"):
+    if not uploaded_file:
+        st.error("Please upload a PDF resume first.")
+    elif not job_desc.strip():
+        st.error("Please paste a job description.")
+    else:
+        with st.spinner("Analyzing Resume... please wait."):
+            try:
+                # 1. Read the uploaded file directly from Streamlit's buffer
+                resume_content = extract_text_from_pdf(uploaded_file)
+                
+                # 2. Run your existing AI agent logic
+                result = get_resume_review(resume_content, job_desc)
+                
+                # 3. Display the results visually in the UI
+                st.success("Analysis Complete!")
+                
+                # Display Score using a large metric visual
+                score = result.get('match_percentage', 0)
+                st.metric(label="Job Match Score", value=f"{score}%")
+                
+                # Display the full structured breakdown
+                st.subheader("Detailed AI Evaluation")
+                st.json(result)
+                
+            except Exception as e:
+                st.error(f"An error occurred during analysis: {e}")
